@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:expensetracker/widgets/expenses.dart';
+import 'package:flutter/services.dart';
+
 
 var kColorScheme = ColorScheme.fromSeed(seedColor: Colors.blueAccent.shade200);
 var kDarkColorScheme = ColorScheme.fromSeed(
@@ -9,8 +11,9 @@ var kDarkColorScheme = ColorScheme.fromSeed(
 );
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initializeDateFormatting('en_IN', null);
-
+  // SystemChrome.setPreferredOrientations([
+  //   DeviceOrientation.portraitUp,
+  // ]).then((_){
   runApp(
     MaterialApp(
       darkTheme: ThemeData.dark().copyWith(colorScheme: kDarkColorScheme),
@@ -40,4 +43,8 @@ void main() async {
       ),
     ),
   );
+
+  // });
+  await initializeDateFormatting('en_IN', null);
+
 }

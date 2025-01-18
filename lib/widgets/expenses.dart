@@ -41,13 +41,13 @@ class _ExpensesState extends State<Expenses> {
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        duration: Duration(seconds: 3),
-        content: Text('Expense deleted'),
+        duration: const Duration(seconds: 3),
+        content: const Text('Expense deleted'),
         action: SnackBarAction(
           label: 'Undo',
-          onPressed: (){
+          onPressed: () {
             setState(() {
-              _registeredExpenses.insert(expenseIndex,expense);
+              _registeredExpenses.insert(expenseIndex, expense);
             });
           },
         ),
@@ -57,6 +57,7 @@ class _ExpensesState extends State<Expenses> {
 
   void _openAddExpenseOverlay() {
     showModalBottomSheet(
+      useSafeArea: true,
       isScrollControlled: true,
       context: context,
       builder: (ctx) => NewExpense(_addExpense),
@@ -64,31 +65,25 @@ class _ExpensesState extends State<Expenses> {
   }
 
   @override
-  Widget build(context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Expense Tracker"),
-        actions: [
-          IconButton(
-            onPressed: _openAddExpenseOverlay,
-            icon: Icon(Icons.add),
-          ),
-        ],
+  Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    
+    Widget mainContent = const Center(
+      child: Text(
+        'No Expense',
+        style: TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+        ),
       ),
-      body: _registeredExpenses.isEmpty
-          ? Center(
-              child: Text(
-                'No Expense',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            )
-          : Column(
+    );
+
+    if (_registeredExpenses.isNotEmpty) {
+      mainContent = width < 600
+          ? Column(
               children: [
                 Chart(expenses: _registeredExpenses),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Expanded(
                   child: ExpensesList(
                     expenses: _registeredExpenses,
@@ -96,7 +91,34 @@ class _ExpensesState extends State<Expenses> {
                   ),
                 ),
               ],
-            ),
+            )
+          : Row(
+              children: [
+                Expanded(
+                  child: Chart(expenses: _registeredExpenses),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: ExpensesList(
+                    expenses: _registeredExpenses,
+                    onRemoveExpense: _removeExpense,
+                  ),
+                ),
+              ],
+            );
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Expense Tracker"),
+        actions: [
+          IconButton(
+            onPressed: _openAddExpenseOverlay,
+            icon: const Icon(Icons.add),
+          ),
+        ],
+      ),
+      body: mainContent,
     );
   }
 }
